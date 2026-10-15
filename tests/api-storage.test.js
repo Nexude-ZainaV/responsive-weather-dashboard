@@ -1,4 +1,5 @@
 // Tests for the API client (with a fake fetch) and the storage helpers (with a fake storage).
+// Run: npm test
 
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
@@ -6,6 +7,7 @@ import { describe, it } from "node:test";
 import { forecastUrl, searchPlaces, WeatherApiError } from "../src/js/api.js";
 import { loadRecentPlaces, loadUnit, rememberPlace, saveUnit } from "../src/js/storage.js";
 
+// Stands in for fetch: records every URL and answers with `body` and `status`.
 function fakeFetch(body, { status = 200 } = {}) {
     const calls = [];
     const impl = async (url) => {
@@ -56,6 +58,7 @@ describe("searchPlaces", () => {
     });
 });
 
+// Minimal localStorage: just getItem/setItem over a plain object.
 function memoryStorage(initial = {}) {
     const data = { ...initial };
     return {

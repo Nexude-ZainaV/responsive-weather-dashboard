@@ -1,4 +1,4 @@
-# Responsive Weather Dashboard
+# Responsive weather dashboard
 
 [![CI](https://github.com/Nexude-ZainaV/responsive-weather-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/Nexude-ZainaV/responsive-weather-dashboard/actions/workflows/ci.yml)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
@@ -6,11 +6,12 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES2023-F7DF1E?logo=javascript&logoColor=black)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 
-**Live demo:** https://nexude-zainav.github.io/responsive-weather-dashboard/?city=Manila
+Live demo: https://nexude-zainav.github.io/responsive-weather-dashboard/?city=Manila
 
-Current conditions, the next 24 hours and a 7-day forecast for any city, in vanilla
-HTML, CSS and JavaScript (ES modules, no framework, no build step). Data comes from
-the free [Open-Meteo](https://open-meteo.com/) API, so no API key is needed.
+Current conditions, the next 24 hours and a 7-day forecast for any city. It's plain
+HTML, CSS and JavaScript (ES modules), with no framework and no build step. The data
+comes from the free [Open-Meteo](https://open-meteo.com/) API, so there's no API key
+to manage.
 
 | Phone (360px) | Desktop (1280px) |
 |---|---|
@@ -18,18 +19,19 @@ the free [Open-Meteo](https://open-meteo.com/) API, so no API key is needed.
 
 ## Features
 
-- City search with autocomplete (ARIA combobox: arrow keys, Enter, Escape)
+- City search with autocomplete, built as an ARIA combobox (arrow keys, Enter, Escape)
 - "Use my location" through the Geolocation API
-- °C / °F toggle (wind switches between km/h and mph with it)
-- 24-hour strip with scroll snapping, 7-day list with temperature range bars on a
-  shared weekly scale
-- Recent places and the unit choice remembered in `localStorage`
-- Shareable deep links: `?city=Tokyo`
-- Light and dark themes from `prefers-color-scheme`; motion off for `prefers-reduced-motion`
+- °C / °F toggle; wind switches between km/h and mph with it
+- A 24-hour strip with scroll snapping, and a 7-day list whose temperature bars share
+  one weekly scale
+- Recent places and the unit choice are remembered in `localStorage`
+- Shareable links such as `?city=Tokyo`
+- Light and dark themes from `prefers-color-scheme`, and no motion under
+  `prefers-reduced-motion`
 
 ## Responsive approach
 
-Mobile first: the base CSS targets phones, and `min-width` queries add layout.
+The base CSS targets phones, and `min-width` queries add layout as the screen grows.
 
 | Breakpoint | Devices | Layout |
 |---|---|---|
@@ -38,12 +40,12 @@ Mobile first: the base CSS targets phones, and `min-width` queries add layout.
 | 900px | tablets (landscape), small laptops | current + hourly side by side, 7-day full width |
 | 1200px | desktops | three columns |
 
-Between breakpoints, fluid sizing does the work: `clamp()` for type and spacing,
+Between breakpoints, fluid sizing does the work. I use `clamp()` for type and spacing,
 `repeat(auto-fit, minmax())` grids, `100dvh` so mobile browser bars don't cause
 overflow, and `minmax(0, 1fr)` columns so long content can't push the page sideways.
 Touch targets are at least 44px.
 
-## How it works
+## How it's laid out
 
 ```
 index.html               semantic markup, landmarks, live region for status messages
@@ -56,18 +58,19 @@ src/js/weather-codes.js  WMO weather code -> label and icon
 src/css/styles.css       design tokens, mobile-first layout
 ```
 
-Network details worth noting:
+A few things in the network code are deliberate:
 
-- **Every request has a timeout** (`AbortSignal.timeout`) and a caller signal, combined
-  with `AbortSignal.any`.
-- **Stale requests are cancelled.** Typing "Lon" then "London" aborts the "Lon" lookup,
-  so an older, slower response can never overwrite a newer one.
-- **Search is debounced** (300ms) so the geocoding API is called once per pause, not
-  once per keystroke.
+- Every request has a timeout (`AbortSignal.timeout`) plus the caller's own signal,
+  combined with `AbortSignal.any`.
+- Stale requests get cancelled. Typing "Lon" and then "London" aborts the "Lon"
+  lookup, so a slower, older response can never overwrite a newer one.
+- Search is debounced by 300ms, so the geocoding API is called once per pause in
+  typing instead of on every keystroke.
 
 ## Run it
 
-Any static file server works (ES modules don't load from `file://`):
+Any static file server works. ES modules won't load from `file://`, so opening
+`index.html` directly isn't enough.
 
 ```bash
 npm start                      # npx http-server on http://localhost:5173
@@ -75,7 +78,8 @@ npm start                      # npx http-server on http://localhost:5173
 python -m http.server 5173
 ```
 
-Tests use Node's built-in test runner (Node 22+), with a fake `fetch` and fake storage:
+The tests use Node's built-in test runner (Node 22+) with a fake `fetch` and a fake
+storage object:
 
 ```bash
 npm test

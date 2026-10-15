@@ -12,6 +12,7 @@ import {
     placeLabel,
 } from "./format.js";
 
+// Small createElement helper. Text always goes in through textContent.
 function el(tag, className, text) {
     const node = document.createElement(tag);
     if (className) node.className = className;
@@ -52,6 +53,7 @@ export function renderHourly(section, forecast, unit) {
             el("span", "hour-temp", formatTemperature(hour.temperature, unit)),
             el("span", "hour-rain", `💧 ${formatPercent(hour.precipitation)}`),
         );
+        // Screen readers get "Light rain" instead of an emoji name.
         item.querySelector(".hour-icon").setAttribute("aria-label", weather.label);
         return item;
     });
@@ -74,6 +76,8 @@ export function renderDaily(section, forecast, unit) {
 
         const bar = el("span", "range-bar");
         const fill = el("span", "range-fill");
+        // --start/--end are the empty space on each side, as a % of the week's range;
+        // the CSS uses them as the fill's left and right insets.
         fill.style.setProperty("--start", `${((low - weekMin) / span) * 100}%`);
         fill.style.setProperty("--end", `${((weekMax - high) / span) * 100}%`);
         bar.append(fill);

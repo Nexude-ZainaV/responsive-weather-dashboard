@@ -53,6 +53,7 @@ export async function searchPlaces(query, options) {
     if (name.length < 2) return [];
     const params = new URLSearchParams({ name, count: String(SUGGESTION_COUNT), language: "en", format: "json" });
     const data = await getJson(`${GEOCODING_URL}?${params}`, options);
+    // Keep only the fields the app uses; these objects end up in localStorage.
     return (data.results ?? []).map(({ id, name, admin1, country, latitude, longitude }) => ({
         id,
         name,
@@ -63,6 +64,7 @@ export async function searchPlaces(query, options) {
     }));
 }
 
+/** Current, hourly and daily forecast for a place, in the unit system the user picked. */
 export async function getForecast(place, unit, options) {
     return getJson(forecastUrl(place, unit), options);
 }

@@ -40,6 +40,8 @@ function showMessage(text, isError = false) {
 
 // ---- forecast -------------------------------------------------------------------
 
+// Cancels any forecast still loading, so switching place or unit quickly can't
+// end with the older response on screen.
 async function loadForecast(place) {
     state.place = place;
     state.forecastController?.abort();
@@ -64,6 +66,7 @@ async function loadForecast(place) {
     }
 }
 
+// Only search results have a numeric id; "Your location" isn't added to recents.
 function selectPlace(place) {
     closeSuggestions();
     ui.input.value = "";
@@ -106,6 +109,8 @@ function renderSuggestions() {
     }
 }
 
+// Autocomplete: wait for a pause in typing, then abort the previous lookup before
+// starting a new one.
 let debounceTimer;
 ui.input.addEventListener("input", () => {
     clearTimeout(debounceTimer);
@@ -142,6 +147,7 @@ ui.input.addEventListener("keydown", (event) => {
 
 ui.input.addEventListener("blur", closeSuggestions);
 
+// Enter picks the highlighted suggestion, or the first one if none is highlighted.
 ui.form.addEventListener("submit", (event) => {
     event.preventDefault();
     const choice = state.suggestions[Math.max(state.activeSuggestion, 0)];
@@ -159,7 +165,7 @@ ui.locate.addEventListener("click", () => {
     navigator.geolocation.getCurrentPosition(
         ({ coords }) => selectPlace({ name: "Your location", latitude: coords.latitude, longitude: coords.longitude }),
         () => showMessage("Location permission was denied. Search for a city instead.", true),
-        { timeout: GEOLOCATION_TIMEOUT_MS, maximumAge: 10 * 60 * 1000 },
+        { timeout: GEOLOCATION_TIMEOUT_MS, maximumAge: 10 * 60 * 1000 }, // a 10-minute-old fix is fine for weather
     );
 });
 
@@ -194,6 +200,7 @@ async function openCityFromUrl(city) {
     }
 }
 
+// A ?city= link wins; otherwise reopen the most recent place.
 applyUnit(state.unit);
 const recent = loadRecentPlaces();
 renderRecent(ui.recent, recent, selectPlace);
